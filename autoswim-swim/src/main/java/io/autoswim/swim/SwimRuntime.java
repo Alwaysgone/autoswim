@@ -56,6 +56,7 @@ public class SwimRuntime implements SwimMessageHandler {
 	}
 
 	public void start() {
+		messageHandlers.add(this);
 		swimNetwork.start();
 		running = true;
 		receiveThread = new Thread(() -> receive());
@@ -72,6 +73,7 @@ public class SwimRuntime implements SwimMessageHandler {
 		sendSchedule.cancel(true);
 		receiveThread.interrupt();
 		swimNetwork.stop();
+		messageHandlers.remove(this);
 	}
 
 	public void registerMessageHandler(SwimMessageHandler messageHandler) {
