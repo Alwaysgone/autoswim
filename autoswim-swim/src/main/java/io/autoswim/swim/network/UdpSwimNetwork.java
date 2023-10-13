@@ -38,11 +38,12 @@ public class UdpSwimNetwork implements SwimNetwork {
 		this.swimNetworkConfig = swimNetworkConfig;
 		this.objectMapper = objectMapper;
 		this.random = new Random();
+		String bindHost = swimNetworkConfig.getBindHost();
 		int swimPort = swimNetworkConfig.getSwimPort();
 		try {
-			swimSocket = new DatagramSocket(InetSocketAddress.createUnresolved("0.0.0.0", swimPort));
+			swimSocket = new DatagramSocket(new InetSocketAddress(bindHost, swimPort));
 		} catch (SocketException e) {
-			throw new AutoSwimException(String.format("Could not set up udp socket at 0.0.0.0:%s", swimPort), e);
+			throw new AutoSwimException(String.format("Could not set up udp socket at %s:%s", bindHost, swimPort), e);
 		}
 	}
 	
@@ -67,6 +68,7 @@ public class UdpSwimNetwork implements SwimNetwork {
 			try {
 				//TODO implement fragmented packets so that arbitrary data can be sent and received
 				swimSocket.receive(packet);
+				LOG.info("Received message");
 				receivedMessages.add(objectMapper.readerFor(SwimMessage.class)
 				.readValue(packet.getData()));
 			} catch (IOException e) {
@@ -110,8 +112,9 @@ public class UdpSwimNetwork implements SwimNetwork {
 	private List<Endpoint> pickNodesToGossipTo(Set<Endpoint> aliveNodes, int numberOfNodes) {
 		List<Endpoint> remainingNodes = new ArrayList<>(aliveNodes);
 		List<Endpoint> pickedNodes = new ArrayList<>();
-		while(pickedNodes.size() < numberOfNodes || remainingNodes.isEmpty()) {
-			pickedNodes.add(remainingNodes.remove(random.nextInt(remainingNodes.size())));
+		while(pickedNodes.size() < numberOfNodes && !remainingNodes.isEmpty()) {
+			int remainingNodesSize = remainingNodes.size();
+			pickedNodes.add(remainingNodes.remove(random.nextInt(remainingNodesSize)));
 		}
 		return pickedNodes;
 	}

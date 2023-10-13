@@ -4,8 +4,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import io.autoswim.AutoSwimException;
 
+@JsonDeserialize(builder = Endpoint.Builder.class)
 public class Endpoint {
 	private final InetAddress address;
 	private final String hostname;

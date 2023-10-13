@@ -3,12 +3,18 @@ package io.autoswim.swim.network;
 import java.util.Objects;
 
 public class SwimNetworkConfig {
+	private final String bindHost;
 	private final int swimPort;
 	private final int maxTransmissionsPerMessage;
-	
+
 	private SwimNetworkConfig(Builder builder) {
+		this.bindHost = builder.bindHost;
 		this.swimPort = builder.swimPort;
 		this.maxTransmissionsPerMessage = builder.maxTransmissionsPerMessage;
+	}
+	
+	public String getBindHost() {
+		return bindHost;
 	}
 	
 	public int getSwimPort() {
@@ -46,12 +52,13 @@ public class SwimNetworkConfig {
 	public static Builder builder() {
 		return new Builder();
 	}
-	
+
 	public static Builder builder(SwimNetworkConfig swimNetworkConfig) {
 		return new Builder(swimNetworkConfig);
 	}
-	
+
 	public static final class Builder {
+		private String bindHost = "0.0.0.0";
 		private int swimPort;
 		private int maxTransmissionsPerMessage = 2;
 
@@ -59,8 +66,14 @@ public class SwimNetworkConfig {
 		}
 
 		private Builder(SwimNetworkConfig swimNetworkConfig) {
+			this.bindHost = swimNetworkConfig.bindHost;
 			this.swimPort = swimNetworkConfig.swimPort;
 			this.maxTransmissionsPerMessage = swimNetworkConfig.maxTransmissionsPerMessage;
+		}
+
+		public Builder withBindHost(String bindHost) {
+			this.bindHost = bindHost;
+			return this;
 		}
 
 		public Builder withSwimPort(int swimPort) {
