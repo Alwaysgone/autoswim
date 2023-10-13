@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +24,13 @@ import io.autoswim.types.Endpoint;
 
 public class UdpSwimNetwork implements SwimNetwork {
 	private static final Logger LOG = LoggerFactory.getLogger(UdpSwimNetwork.class);
-
+	private static final int BUFFER_SIZE = 100 * 1024;
+	
 	private final SwimNetworkConfig swimNetworkConfig;
 	private final DatagramSocket swimSocket;
 	private final ObjectMapper objectMapper;
 	private final Random random;
+	private final BlockingQueue<SwimMessage> receivedMessages = new LinkedBlockingQueue<>();
 	private boolean running = false;
 	private Thread receiveThread;
 	
@@ -52,31 +56,32 @@ public class UdpSwimNetwork implements SwimNetwork {
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-
+		running = false;
+		receiveThread.interrupt();
 	}
 	
 	private void receive() {
-		byte[] buffer = new byte[1024];
+		byte[] buffer = new byte[BUFFER_SIZE];
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 		while(running) {
 			try {
+				//TODO implement fragmented packets so that arbitrary data can be sent and received
 				swimSocket.receive(packet);
+				receivedMessages.add(objectMapper.readerFor(SwimMessage.class)
+				.readValue(packet.getData()));
 			} catch (IOException e) {
 				LOG.error("An error occurred while receiving UDP packets", e);
 			}
-			//TODO setup socket and determine how messages are delimited might need to set up a protocol
-			// 1. deserialize message
-			// 2. add sender to member list or update its heartbeat status
-			// 3. add the deserialized message to an ordered queue so receiveMessage() can return it
 		}
 	}
 
 	@Override
 	public SwimMessage receiveMessage() {
-		
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return receivedMessages.take();
+		} catch (InterruptedException e) {
+			throw new AutoSwimException("Got interrupted while waiting for the next SwimMessage", e);
+		}
 	}
 
 	@Override

@@ -10,9 +10,9 @@ import io.autoswim.types.Endpoint;
 public class HeartbeatMessage extends SwimMessage {
 
 	private HeartbeatMessage(Builder builder) {
-		super(builder.createdAt, builder.sender);
+		super(builder.id, builder.createdAt, builder.sender);
 	}
-	
+
 	@Override
 	public void handle(SwimMessageHandler handler) {
 		handler.handle(this);	
@@ -22,20 +22,27 @@ public class HeartbeatMessage extends SwimMessage {
 		return new Builder();
 	}
 
-	public static Builder builder(HeartbeatMessage startupMessage) {
-		return new Builder(startupMessage);
+	public static Builder builder(HeartbeatMessage heartbeatMessage) {
+		return new Builder(heartbeatMessage);
 	}
 
 	public static final class Builder {
+		private String id;
 		private Instant createdAt;
 		private Endpoint sender;
 
 		private Builder() {
 		}
 
-		private Builder(HeartbeatMessage startupMessage) {
-			this.createdAt = startupMessage.getCreatedAt();
-			this.sender = startupMessage.getSender();
+		private Builder(HeartbeatMessage heartbeatMessage) {
+			this.id = heartbeatMessage.getId();
+			this.createdAt = heartbeatMessage.getCreatedAt();
+			this.sender = heartbeatMessage.getSender();
+		}
+
+		public Builder withId(String id) {
+			this.id = id;
+			return this;
 		}
 
 		public Builder withCreatedAt(Instant createdAt) {
@@ -52,4 +59,6 @@ public class HeartbeatMessage extends SwimMessage {
 			return new HeartbeatMessage(this);
 		}
 	}
+
+	
 }

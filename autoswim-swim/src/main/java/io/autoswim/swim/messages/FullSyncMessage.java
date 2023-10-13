@@ -12,10 +12,10 @@ public class FullSyncMessage extends SwimMessage {
 	private final byte[] state;
 
 	private FullSyncMessage(Builder builder) {
-		super(builder.createdAt, builder.sender);
+		super(builder.id, builder.createdAt, builder.sender);
 		this.state = builder.state;
 	}
-	
+
 	public byte[] getState() {
 		return state;
 	}
@@ -54,11 +54,12 @@ public class FullSyncMessage extends SwimMessage {
 		return new Builder();
 	}
 
-	public static Builder builder(FullSyncMessage fullSync) {
-		return new Builder(fullSync);
+	public static Builder builder(FullSyncMessage fullSyncMessage) {
+		return new Builder(fullSyncMessage);
 	}
 
 	public static final class Builder {
+		private String id;
 		private Instant createdAt;
 		private Endpoint sender;
 		private byte[] state;
@@ -66,20 +67,28 @@ public class FullSyncMessage extends SwimMessage {
 		private Builder() {
 		}
 
-		private Builder(FullSyncMessage fullSync) {
-			this.state = fullSync.state;
+		private Builder(FullSyncMessage fullSyncMessage) {
+			this.id = fullSyncMessage.getId();
+			this.createdAt = fullSyncMessage.getCreatedAt();
+			this.sender = fullSyncMessage.getSender();
+			this.state = fullSyncMessage.state;
+		}
+
+		public Builder withId(String id) {
+			this.id = id;
+			return this;
 		}
 
 		public Builder withCreatedAt(Instant createdAt) {
 			this.createdAt = createdAt;
 			return this;
 		}
-		
+
 		public Builder withSender(Endpoint sender) {
 			this.sender = sender;
 			return this;
 		}
-		
+
 		public Builder withState(byte[] state) {
 			this.state = state;
 			return this;
@@ -89,4 +98,6 @@ public class FullSyncMessage extends SwimMessage {
 			return new FullSyncMessage(this);
 		}
 	}
+
+
 }

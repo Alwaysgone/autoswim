@@ -10,9 +10,9 @@ import io.autoswim.types.Endpoint;
 public class StartupMessage extends SwimMessage {
 
 	private StartupMessage(Builder builder) {
-		super(builder.createdAt, builder.sender);
+		super(builder.id, builder.createdAt, builder.sender);
 	}
-	
+
 	@Override
 	public void handle(SwimMessageHandler handler) {
 		handler.handle(this);	
@@ -27,6 +27,7 @@ public class StartupMessage extends SwimMessage {
 	}
 
 	public static final class Builder {
+		private String id;
 		private Instant createdAt;
 		private Endpoint sender;
 
@@ -34,8 +35,14 @@ public class StartupMessage extends SwimMessage {
 		}
 
 		private Builder(StartupMessage startupMessage) {
+			this.id = startupMessage.getId();
 			this.createdAt = startupMessage.getCreatedAt();
 			this.sender = startupMessage.getSender();
+		}
+
+		public Builder withId(String id) {
+			this.id = id;
+			return this;
 		}
 
 		public Builder withCreatedAt(Instant createdAt) {
@@ -52,4 +59,6 @@ public class StartupMessage extends SwimMessage {
 			return new StartupMessage(this);
 		}
 	}
+
+	
 }

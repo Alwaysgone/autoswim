@@ -2,6 +2,7 @@ package io.autoswim.swim;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +19,9 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
 import io.autoswim.AutoSwimException;
 import io.autoswim.swim.messages.FullSyncMessage;
 import io.autoswim.swim.messages.HeartbeatMessage;
@@ -27,7 +31,7 @@ import io.autoswim.swim.messages.SwimMessageHandler;
 import io.autoswim.swim.network.SwimNetwork;
 import io.autoswim.types.Endpoint;
 
-public class SwimRuntime implements SwimMessageHandler {
+public class SwimRuntime {
 	private static final Logger LOG = LoggerFactory.getLogger(SwimRuntime.class);
 
 	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1); 
@@ -35,15 +39,20 @@ public class SwimRuntime implements SwimMessageHandler {
 	private final List<SwimMessageHandler> messageHandlers = new ArrayList<>();
 	private final Endpoint ownEndpoint;
 	private final SwimNetwork swimNetwork;
-	private final Set<Endpoint> seedNodes;
-	private final Set<Endpoint> aliveNodes = Collections.synchronizedSet(new HashSet<>());
+	private final Cache<String, String> seenMessages = Caffeine.newBuilder()
+			.expireAfterWrite(Duration.ofMinutes(10L))
+			.build();
+	private final Cache<Endpoint, Instant> aliveNodes = Caffeine.newBuilder()
+			.expireAfterWrite(Duration.ofSeconds(30L))
+			.build();
 	private boolean running = false;
 	private Thread receiveThread;
 	private ScheduledFuture<?> sendSchedule;
 
 	public SwimRuntime(Set<Endpoint> seedNodes, int swimPort, SwimNetwork swimNetwork) {
-		this.seedNodes = seedNodes;
-		aliveNodes.addAll(seedNodes);
+		// just add the seed nodes to the alive nodes so that the Startup message can be sent to them
+		// if seed nodes are down they will be removed from the member list anyway
+		seedNodes.forEach(sn -> aliveNodes.put(sn, Instant.now()));
 		this.swimNetwork = swimNetwork;
 		try {
 			this.ownEndpoint = Endpoint.builder()
@@ -56,7 +65,6 @@ public class SwimRuntime implements SwimMessageHandler {
 	}
 
 	public void start() {
-		messageHandlers.add(this);
 		swimNetwork.start();
 		running = true;
 		receiveThread = new Thread(() -> receive());
@@ -73,7 +81,6 @@ public class SwimRuntime implements SwimMessageHandler {
 		sendSchedule.cancel(true);
 		receiveThread.interrupt();
 		swimNetwork.stop();
-		messageHandlers.remove(this);
 	}
 
 	public void registerMessageHandler(SwimMessageHandler messageHandler) {
@@ -83,16 +90,23 @@ public class SwimRuntime implements SwimMessageHandler {
 	private void receive() {
 		while(running) {
 			SwimMessage swimMessage = swimNetwork.receiveMessage();
-			LOG.info("Handling: {}", swimMessage);
-			messageHandlers.forEach(mh -> {
-				try {
-					swimMessage.handle(mh);
-				} catch(Exception e) {
-					LOG.error("An error occurred while {} handled {}"
-							, mh.getClass().getSimpleName()
-							, swimMessage.getClass().getSimpleName(), e);
-				}
-			});
+			aliveNodes.put(swimMessage.getSender(), Instant.now());
+			String messageId = swimMessage.getId();
+			if(seenMessages.getIfPresent(messageId) == null) {				
+				LOG.info("Handling: {}", swimMessage);
+				messageHandlers.forEach(mh -> {
+					try {
+						swimMessage.handle(mh);
+					} catch(Exception e) {
+						LOG.error("An error occurred while {} handled {}"
+								, mh.getClass().getSimpleName()
+								, swimMessage.getClass().getSimpleName(), e);
+					}
+				});
+				messagesToSend.add(swimMessage);
+			} else {
+				LOG.info("Ignoring already seen message with id {} of type {}", messageId, swimMessage.getClass().getSimpleName());
+			}
 		}
 	}
 
@@ -105,35 +119,11 @@ public class SwimRuntime implements SwimMessageHandler {
 			swimNetwork.sendMessage(HeartbeatMessage.builder()
 					.withCreatedAt(Instant.now())
 					.withSender(ownEndpoint)
-					.build(), aliveNodes);
+					.build(), aliveNodes.asMap().keySet());
 		} else {
 			while(!messagesToSend.isEmpty()) {
-				swimNetwork.sendMessage(messagesToSend.poll(), aliveNodes);
+				swimNetwork.sendMessage(messagesToSend.poll(), aliveNodes.asMap().keySet());
 			}
 		}
-	}
-
-	@Override
-	public void handle(StartupMessage startupMessage) {
-		//TODO remove nodes after a timeout from alive nodes
-		// a cache that handles this is probably the simplest way
-		// check if message was already seen and send it to other nodes if not
-		aliveNodes.add(startupMessage.getSender());
-	}
-
-	@Override
-	public void handle(FullSyncMessage fullSyncMessage) {
-		//TODO remove nodes after a timeout from alive nodes
-		// a cache that handles this is probably the simplest way
-		// check if message was already seen and send it to other nodes if not
-		aliveNodes.add(fullSyncMessage.getSender());
-	}
-
-	@Override
-	public void handle(HeartbeatMessage heartbeatMessage) {
-		//TODO remove nodes after a timeout from alive nodes
-		// a cache that handles this is probably the simplest way
-		// check if message was already seen and send it to other nodes if not
-		aliveNodes.add(heartbeatMessage.getSender());
 	}
 }

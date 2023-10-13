@@ -19,12 +19,18 @@ import io.autoswim.types.Endpoint;
 		  @Type(value = FullSyncMessage.class, name = "truck") 
 		})
 public abstract class SwimMessage {
+	private final String id;
 	private final Instant createdAt;
 	private final Endpoint sender;
 	
-	protected SwimMessage(Instant createdAt, Endpoint sender) {
+	protected SwimMessage(String id, Instant createdAt, Endpoint sender) {
+		this.id = id;
 		this.createdAt = createdAt;
 		this.sender = sender;
+	}
+	
+	public String getId() {
+		return id;
 	}
 	
 	public Instant getCreatedAt() {
