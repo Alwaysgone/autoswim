@@ -17,6 +17,14 @@ public class StartupMessage extends SwimMessage {
 	public void handle(SwimMessageHandler handler) {
 		handler.handle(this);	
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		return "StartupMessage [id=" + getId() + ", createdAt=" + getCreatedAt() + ", sender="
+				+ getSender() + "]";
+	}
 
 	public static Builder builder() {
 		return new Builder();

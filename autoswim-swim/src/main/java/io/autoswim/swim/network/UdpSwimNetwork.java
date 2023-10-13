@@ -68,9 +68,10 @@ public class UdpSwimNetwork implements SwimNetwork {
 			try {
 				//TODO implement fragmented packets so that arbitrary data can be sent and received
 				swimSocket.receive(packet);
-				LOG.info("Received message");
-				receivedMessages.add(objectMapper.readerFor(SwimMessage.class)
-				.readValue(packet.getData()));
+				SwimMessage swimMessage = objectMapper.readerFor(SwimMessage.class)
+				.readValue(packet.getData());
+				LOG.debug("Received message: {}", swimMessage);
+				receivedMessages.add(swimMessage);
 			} catch (IOException e) {
 				LOG.error("An error occurred while receiving UDP packets", e);
 			}
