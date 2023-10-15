@@ -11,6 +11,4 @@ plugins {
 }
 
 rootProject.name = 'autoswim'
-include('autoswim-core')
-include('autoswim-runtime')
-include('autoswim-swim')
+include 'autoswim-core', 'autoswim-runtime', 'autoswim-swim'

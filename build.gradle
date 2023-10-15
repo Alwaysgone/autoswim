@@ -1,0 +1,29 @@
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    group = 'io.autoswim'
+    version = '1.0.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+            }
+        }
+    }
+    
+    java {
+    	toolchain {
+        	languageVersion = JavaLanguageVersion.of(11)
+    	}
+	}
+
+    jar {
+        manifest.attributes provider: 'gradle'
+    }
+}
