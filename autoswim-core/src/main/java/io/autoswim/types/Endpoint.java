@@ -62,6 +62,13 @@ public class Endpoint {
 		return "Endpoint [address=" + address + ", hostname=" + hostname + ", port=" + port + "]";
 	}
 	
+	public static Endpoint of(String endpoint) {
+		String[] splittedEndpoint = endpoint.split(":");
+		return Endpoint.builder()
+				.withHostname(splittedEndpoint[0])
+				.withPort(Integer.parseInt(splittedEndpoint[1]))
+				.build();
+	}
 
 	public static Builder builder() {
 		return new Builder();
