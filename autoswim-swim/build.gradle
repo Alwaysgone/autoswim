@@ -10,10 +10,6 @@ dependencies {
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'ch.qos.logback:logback-classic:1.4.11'
-
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    //api 'org.apache.commons:commons-math3:3.6.1'
-    api 'org.automerge:automerge:0.0.5'
     
     implementation platform('com.fasterxml.jackson:jackson-bom:2.15.2')
     implementation 'com.fasterxml.jackson.core:jackson-databind'

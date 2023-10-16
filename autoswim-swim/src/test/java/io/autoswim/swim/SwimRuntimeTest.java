@@ -48,11 +48,17 @@ class SwimRuntimeTest {
 				.withHostname("localhost")
 				.withPort(swimPort2)
 				.build();
-		SwimRuntime swimRuntime1 = new SwimRuntime(Set.of(network2),
+		SwimConfig config1 = SwimConfig.builder()
+				.withSeedNodes(Set.of(network2))
+				.build();
+		SwimRuntime swimRuntime1 = new SwimRuntime(config1,
 				new OwnEndpointProvider(network1),
 				idGenerator,
 				udpSwimNetwork1);
-		SwimRuntime swimRuntime2 = new SwimRuntime(Set.of(network1),
+		SwimConfig config2 = SwimConfig.builder()
+				.withSeedNodes(Set.of(network1))
+				.build();
+		SwimRuntime swimRuntime2 = new SwimRuntime(config2,
 				new OwnEndpointProvider(network2),
 				idGenerator,
 				udpSwimNetwork2);

@@ -40,19 +40,22 @@ public class SwimRuntime {
 			.expireAfterWrite(Duration.ofMinutes(10L))
 			.build();
 	private final Cache<Endpoint, Instant> aliveNodes = Caffeine.newBuilder()
-			.expireAfterWrite(Duration.ofSeconds(30L))
+			.expireAfterWrite(Duration.ofMinutes(5L))
 			.build();
+	private final SwimConfig swimConfig;
 	private boolean running = false;
 	private Thread receiveThread;
 	private ScheduledFuture<?> sendSchedule;
+	private Instant lastMessageSent = Instant.now();
 
-	public SwimRuntime(Set<Endpoint> seedNodes,
+	public SwimRuntime(SwimConfig swimConfig,
 			OwnEndpointProvider ownEndpointProvider,
 			MessageIdGenerator messageIdGenerator,
 			SwimNetwork swimNetwork) {
+		this.swimConfig = swimConfig;
 		// just add the seed nodes to the alive nodes so that the Startup message can be sent to them
 		// if seed nodes are down they will be removed from the member list anyway
-		seedNodes.forEach(sn -> aliveNodes.put(sn, Instant.now()));
+		swimConfig.getSeedNodes().forEach(sn -> aliveNodes.put(sn, Instant.now()));
 		this.swimNetwork = swimNetwork;
 		this.messageIdGenerator = messageIdGenerator;
 		this.ownEndpoint = ownEndpointProvider.getOwnEndpoint();
@@ -68,7 +71,7 @@ public class SwimRuntime {
 				.withCreatedAt(Instant.now())
 				.withSender(ownEndpoint)
 				.build());
-		sendSchedule = scheduler.scheduleAtFixedRate(() -> sendMessages(), 1L, 10L, TimeUnit.SECONDS);
+		sendSchedule = scheduler.scheduleAtFixedRate(() -> sendMessages(), 1L, 1L, TimeUnit.SECONDS);
 	}
 
 	public void stop() {
@@ -111,28 +114,34 @@ public class SwimRuntime {
 	}
 	
 	private void sendMessages() {
-		if(messagesToSend.isEmpty()) {
-			//FIXME this should be optimized to only send heartbeat messages
-			// when a certain timeframe has passed so that the message scheduler
-			// can have a small schedule interval without spamming the network
-			// with heartbeats
+		while(!messagesToSend.isEmpty()) {
+			// adding messages to send to already seen messages
+			// since they contain data that has already been processed
+			SwimMessage messageToSend = messagesToSend.poll();
+			String id = messageToSend.getId();
+			seenMessages.put(id, id);
+			swimNetwork.sendMessage(messageToSend, aliveNodes.asMap().keySet());
+			lastMessageSent = Instant.now();
+		}
+		
+		// heartbeats are only sent when no messages were sent for a configurable
+		// interval so that they are only sent when there are no other messages
+		// that can be used as a passive health check
+		Instant now = Instant.now();
+		if(lastMessageSent.plus(swimConfig.getHeartbeatInterval()).isBefore(now)) {
 			LOG.debug("Sending heartbeat message ...");
 			String id = messageIdGenerator.generateId();
 			seenMessages.put(id, id);
+			//FIXME if all nodes are down only once then no more heartbeats
+			// will be sent
+			// would need to add down nodes to the set of alive nodes here
+			// to enable rediscovering them
 			swimNetwork.sendMessage(HeartbeatMessage.builder()
 					.withId(id)
 					.withCreatedAt(Instant.now())
 					.withSender(ownEndpoint)
 					.build(), aliveNodes.asMap().keySet());
-		} else {
-			while(!messagesToSend.isEmpty()) {
-				// adding messages to send to already seen messages
-				// since they contain data that has already been processed
-				SwimMessage messageToSend = messagesToSend.poll();
-				String id = messageToSend.getId();
-				seenMessages.put(id, id);
-				swimNetwork.sendMessage(messageToSend, aliveNodes.asMap().keySet());
-			}
+			lastMessageSent = now;
 		}
 	}
 	
