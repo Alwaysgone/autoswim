@@ -51,7 +51,7 @@ public class AutoswimMessageHandler implements SwimMessageHandler {
 		stateHandler.updateState(d -> {
 			d.merge(otherDoc);
 			return d;
-		});
+		}, false);
 	}
 
 	@Override

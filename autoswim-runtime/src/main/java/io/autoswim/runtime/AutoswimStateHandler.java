@@ -40,7 +40,9 @@ public class AutoswimStateHandler {
 		this.swimRuntime = swimRuntime;
 		if(autoswimStatePath.toFile().exists()) {
 			try {
-				Files.readAllBytes(autoswimStatePath);
+				byte[] stateBytes = Files.readAllBytes(autoswimStatePath);
+				Document storedDoc = Document.load(stateBytes);
+				currentState.set(storedDoc);
 			} catch (IOException e) {
 				throw new AutoSwimException(String.format("Could not read Autoswim state at %s", autoswimStatePath), e);
 			}
@@ -66,14 +68,20 @@ public class AutoswimStateHandler {
 	}
 	
 	public void updateState(UnaryOperator<Document> update) {
+		updateState(update, true);
+	}
+	
+	void updateState(UnaryOperator<Document> update, boolean scheduleUpdate) {
 		Document newDocument = currentState.updateAndGet(update);
-		//TODO only send delta
-		swimRuntime.scheduleMessage(FullSyncMessage.builder()
-				.withCreatedAt(Instant.now())
-				.withId(messageIdGenerator.generateId())
-				.withState(newDocument.save())
-				.withSender(ownEndpointProvider.getOwnEndpoint())
-				.build());
+		if(scheduleUpdate) {
+			//TODO only send delta
+			swimRuntime.scheduleMessage(FullSyncMessage.builder()
+					.withCreatedAt(Instant.now())
+					.withId(messageIdGenerator.generateId())
+					.withState(newDocument.save())
+					.withSender(ownEndpointProvider.getOwnEndpoint())
+					.build());
+		}
 		storeState();
 	}
 	

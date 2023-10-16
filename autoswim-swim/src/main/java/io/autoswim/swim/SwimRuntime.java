@@ -68,7 +68,7 @@ public class SwimRuntime {
 				.withCreatedAt(Instant.now())
 				.withSender(ownEndpoint)
 				.build());
-		sendSchedule = scheduler.scheduleAtFixedRate(() -> sendMessages(), 1L, 1L, TimeUnit.SECONDS);
+		sendSchedule = scheduler.scheduleAtFixedRate(() -> sendMessages(), 1L, 10L, TimeUnit.SECONDS);
 	}
 
 	public void stop() {
@@ -112,6 +112,10 @@ public class SwimRuntime {
 	
 	private void sendMessages() {
 		if(messagesToSend.isEmpty()) {
+			//FIXME this should be optimized to only send heartbeat messages
+			// when a certain timeframe has passed so that the message scheduler
+			// can have a small schedule interval without spamming the network
+			// with heartbeats
 			LOG.debug("Sending heartbeat message ...");
 			String id = messageIdGenerator.generateId();
 			seenMessages.put(id, id);

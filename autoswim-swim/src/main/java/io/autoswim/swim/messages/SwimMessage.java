@@ -16,7 +16,8 @@ import io.autoswim.types.Endpoint;
 		  property = "type")
 		@JsonSubTypes({ 
 		  @Type(value = StartupMessage.class, name = "startup"), 
-		  @Type(value = FullSyncMessage.class, name = "truck") 
+		  @Type(value = FullSyncMessage.class, name = "full-sync"),
+		  @Type(value = HeartbeatMessage.class, name = "heartbeat")
 		})
 public abstract class SwimMessage {
 	private final String id;
