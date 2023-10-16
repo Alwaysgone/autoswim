@@ -1,7 +1,7 @@
 dependencies {
 
-	implementation project(':autoswim-core')
-	implementation project(':autoswim-swim')
+	api project(':autoswim-core')
+	api project(':autoswim-swim')
 
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
