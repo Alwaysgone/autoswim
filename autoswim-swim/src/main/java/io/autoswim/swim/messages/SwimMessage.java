@@ -43,4 +43,6 @@ public abstract class SwimMessage {
 	}
 	
 	public abstract void handle(SwimMessageHandler handler);
+	
+	public abstract byte getMessageType();
 }

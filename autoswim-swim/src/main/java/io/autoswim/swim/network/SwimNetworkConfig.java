@@ -1,18 +1,26 @@
 package io.autoswim.swim.network;
 
+import java.util.List;
 import java.util.Objects;
+
+import io.autoswim.types.Endpoint;
+import java.util.Collections;
 
 public class SwimNetworkConfig {
 	private final String bindHost;
 	private final int swimPort;
 	private final int maxTransmissionsPerMessage;
+	private final int bufferSize;
+	private final List<Endpoint> seedNodes;
 
 	private SwimNetworkConfig(Builder builder) {
 		this.bindHost = builder.bindHost;
 		this.swimPort = builder.swimPort;
 		this.maxTransmissionsPerMessage = builder.maxTransmissionsPerMessage;
+		this.bufferSize = builder.bufferSize;
+		this.seedNodes = builder.seedNodes;
 	}
-	
+
 	public String getBindHost() {
 		return bindHost;
 	}
@@ -25,9 +33,17 @@ public class SwimNetworkConfig {
 		return maxTransmissionsPerMessage;
 	}
 	
+	public int getBufferSize() {
+		return bufferSize;
+	}
+	
+	public List<Endpoint> getSeedNodes() {
+		return seedNodes;
+	}	
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(maxTransmissionsPerMessage, swimPort);
+		return Objects.hash(bindHost, bufferSize, maxTransmissionsPerMessage, seedNodes, swimPort);
 	}
 
 	@Override
@@ -39,13 +55,15 @@ public class SwimNetworkConfig {
 		if (getClass() != obj.getClass())
 			return false;
 		SwimNetworkConfig other = (SwimNetworkConfig) obj;
-		return maxTransmissionsPerMessage == other.maxTransmissionsPerMessage && swimPort == other.swimPort;
+		return Objects.equals(bindHost, other.bindHost) && bufferSize == other.bufferSize
+				&& maxTransmissionsPerMessage == other.maxTransmissionsPerMessage
+				&& Objects.equals(seedNodes, other.seedNodes) && swimPort == other.swimPort;
 	}
 
 	@Override
 	public String toString() {
-		return "SwimNetworkConfig [swimPort=" + swimPort + ", maxTransmissionsPerMessage=" + maxTransmissionsPerMessage
-				+ "]";
+		return "SwimNetworkConfig [bindHost=" + bindHost + ", swimPort=" + swimPort + ", maxTransmissionsPerMessage="
+				+ maxTransmissionsPerMessage + ", bufferSize=" + bufferSize + ", seedNodes=" + seedNodes + "]";
 	}
 	
 
@@ -58,9 +76,11 @@ public class SwimNetworkConfig {
 	}
 
 	public static final class Builder {
-		private String bindHost = "0.0.0.0";
+		private String bindHost;
 		private int swimPort;
-		private int maxTransmissionsPerMessage = 2;
+		private int maxTransmissionsPerMessage;
+		private int bufferSize;
+		private List<Endpoint> seedNodes = Collections.emptyList();
 
 		private Builder() {
 		}
@@ -69,6 +89,8 @@ public class SwimNetworkConfig {
 			this.bindHost = swimNetworkConfig.bindHost;
 			this.swimPort = swimNetworkConfig.swimPort;
 			this.maxTransmissionsPerMessage = swimNetworkConfig.maxTransmissionsPerMessage;
+			this.bufferSize = swimNetworkConfig.bufferSize;
+			this.seedNodes = swimNetworkConfig.seedNodes;
 		}
 
 		public Builder withBindHost(String bindHost) {
@@ -83,6 +105,16 @@ public class SwimNetworkConfig {
 
 		public Builder withMaxTransmissionsPerMessage(int maxTransmissionsPerMessage) {
 			this.maxTransmissionsPerMessage = maxTransmissionsPerMessage;
+			return this;
+		}
+
+		public Builder withBufferSize(int bufferSize) {
+			this.bufferSize = bufferSize;
+			return this;
+		}
+
+		public Builder withSeedNodes(List<Endpoint> seedNodes) {
+			this.seedNodes = seedNodes;
 			return this;
 		}
 

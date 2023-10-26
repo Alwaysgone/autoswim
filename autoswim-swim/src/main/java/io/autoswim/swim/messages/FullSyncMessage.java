@@ -24,6 +24,11 @@ public class FullSyncMessage extends SwimMessage {
 	public void handle(SwimMessageHandler handler) {
 		handler.handle(this);	
 	}
+	
+	@Override
+	public byte getMessageType() {
+		return (byte)'f';
+	}
 
 	@Override
 	public int hashCode() {
@@ -98,6 +103,4 @@ public class FullSyncMessage extends SwimMessage {
 			return new FullSyncMessage(this);
 		}
 	}
-
-
 }

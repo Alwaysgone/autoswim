@@ -17,6 +17,11 @@ public class HeartbeatMessage extends SwimMessage {
 	public void handle(SwimMessageHandler handler) {
 		handler.handle(this);	
 	}
+	
+	@Override
+	public byte getMessageType() {
+		return (byte)'h';
+	}
 
 	public static Builder builder() {
 		return new Builder();

@@ -18,7 +18,10 @@ public class StartupMessage extends SwimMessage {
 		handler.handle(this);	
 	}
 	
-	
+	@Override
+	public byte getMessageType() {
+		return (byte)'s';
+	}
 
 	@Override
 	public String toString() {
