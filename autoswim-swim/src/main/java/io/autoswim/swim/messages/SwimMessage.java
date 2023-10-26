@@ -1,6 +1,8 @@
 package io.autoswim.swim.messages;
 
+import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -19,7 +21,8 @@ import io.autoswim.types.Endpoint;
 		  @Type(value = FullSyncMessage.class, name = "full-sync"),
 		  @Type(value = HeartbeatMessage.class, name = "heartbeat")
 		})
-public abstract class SwimMessage {
+public abstract class SwimMessage implements Serializable {
+	private static final long serialVersionUID = 8150048954595274240L;
 	private final String id;
 	private final Instant createdAt;
 	private final Endpoint sender;
@@ -45,4 +48,22 @@ public abstract class SwimMessage {
 	public abstract void handle(SwimMessageHandler handler);
 	
 	public abstract byte getMessageType();
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(createdAt, id, sender);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SwimMessage other = (SwimMessage) obj;
+		return Objects.equals(createdAt, other.createdAt) && Objects.equals(id, other.id)
+				&& Objects.equals(sender, other.sender);
+	}
 }

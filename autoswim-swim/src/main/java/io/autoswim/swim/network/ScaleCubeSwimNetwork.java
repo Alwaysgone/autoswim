@@ -28,7 +28,6 @@ public class ScaleCubeSwimNetwork implements SwimNetwork {
 	private final SwimNetworkConfig swimNetworkConfig;
 	private final OwnEndpointProvider ownEndpointProvider;
 	private final BlockingQueue<SwimMessage> receivedMessages = new LinkedBlockingQueue<>();
-	//	private Transport transport;
 	private Cluster cluster;
 
 	public ScaleCubeSwimNetwork(SwimNetworkConfig swimNetworkConfig, OwnEndpointProvider ownEndpointProvider) {
@@ -49,17 +48,14 @@ public class ScaleCubeSwimNetwork implements SwimNetwork {
 				.transport(opts -> opts.port(swimNetworkConfig.getSwimPort()))
 				;
 		if(!seedNodes.isEmpty()) {
-			clusterConfig.membership(opts -> opts.seedMembers(seedNodes));
+			LOG.info("Using seed nodes: {}", seedNodes);
+			clusterConfig = clusterConfig.membership(opts -> opts.seedMembers(seedNodes));
 		}
 		cluster = new ClusterImpl(clusterConfig)
 				.transportFactory(TcpTransportFactory::new)
 				.handler(cluster -> new SwimClusterMessageHandler(receivedMessages))
 				.startAwait();
-		LOG.info("Started up with these members: {}", cluster.members());
-		//		transport = Transport.bindAwait(TransportConfig.defaultConfig()
-		//				.messageCodec(new JacksonMessageCodec())
-		//				.port(swimNetworkConfig.getSwimPort()));
-		//		transport.start();
+		LOG.info("Started up on {} with these members: {}", cluster.address(), cluster.members());
 	}
 
 	@Override

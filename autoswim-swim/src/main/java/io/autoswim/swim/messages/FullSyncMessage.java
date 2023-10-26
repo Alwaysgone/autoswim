@@ -9,6 +9,7 @@ import io.autoswim.types.Endpoint;
 
 @JsonDeserialize(builder = FullSyncMessage.Builder.class)
 public class FullSyncMessage extends SwimMessage {
+	private static final long serialVersionUID = -3419944944409542504L;
 	private final byte[] state;
 
 	private FullSyncMessage(Builder builder) {

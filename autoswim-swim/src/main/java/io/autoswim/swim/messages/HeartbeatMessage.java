@@ -8,6 +8,7 @@ import io.autoswim.types.Endpoint;
 
 @JsonDeserialize(builder = HeartbeatMessage.Builder.class)
 public class HeartbeatMessage extends SwimMessage {
+	private static final long serialVersionUID = 7643489110483726833L;
 
 	private HeartbeatMessage(Builder builder) {
 		super(builder.id, builder.createdAt, builder.sender);

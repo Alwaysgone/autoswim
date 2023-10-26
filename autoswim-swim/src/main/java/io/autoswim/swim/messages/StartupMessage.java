@@ -8,6 +8,7 @@ import io.autoswim.types.Endpoint;
 
 @JsonDeserialize(builder = StartupMessage.Builder.class)
 public class StartupMessage extends SwimMessage {
+	private static final long serialVersionUID = -2638419722084700850L;
 
 	private StartupMessage(Builder builder) {
 		super(builder.id, builder.createdAt, builder.sender);

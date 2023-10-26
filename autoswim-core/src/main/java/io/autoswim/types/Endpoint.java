@@ -1,5 +1,6 @@
 package io.autoswim.types;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Objects;
@@ -9,7 +10,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.autoswim.AutoSwimException;
 
 @JsonDeserialize(builder = Endpoint.Builder.class)
-public class Endpoint {
+public class Endpoint implements Serializable {
+	private static final long serialVersionUID = 8557220143141942323L;
 	private final InetAddress address;
 	private final String hostname;
 	private final int port;
