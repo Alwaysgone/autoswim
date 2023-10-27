@@ -76,10 +76,10 @@ public class SwimNetworkConfig {
 	}
 
 	public static final class Builder {
-		private String bindHost;
+		private String bindHost = "0.0.0.0";
 		private int swimPort;
-		private int maxTransmissionsPerMessage;
-		private int bufferSize;
+		private int maxTransmissionsPerMessage = 2;
+		private int bufferSize = 100 * 1024;
 		private List<Endpoint> seedNodes = Collections.emptyList();
 
 		private Builder() {
