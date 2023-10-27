@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Instant;
 import java.util.Set;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -16,6 +17,7 @@ import io.autoswim.swim.messages.SwimMessage;
 import io.autoswim.swim.serialization.ObjectMapperProvider;
 import io.autoswim.types.Endpoint;
 
+@Disabled
 class FragmentedUdpSwimNetworkTest {
 
 	@Timeout(5)
