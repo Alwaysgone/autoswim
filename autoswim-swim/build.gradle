@@ -16,8 +16,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
     implementation 'org.slf4j:slf4j-api:2.0.9'
-    implementation 'io.scalecube:scalecube-cluster:2.6.17'
-    implementation 'io.scalecube:scalecube-transport-netty:2.6.17'
+    api 'io.scalecube:scalecube-cluster:2.6.17'
+    api 'io.scalecube:scalecube-transport-netty:2.6.17'
 	
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
