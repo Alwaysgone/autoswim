@@ -58,7 +58,7 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 	}
 	
 	private String asString(Endpoint endpoint) {
-		return String.format("%s:%s", endpoint.getHostname(), endpoint.getPort());
+		return endpoint.toHostAndPortString();
 	}
 	
 	private String asString(Address address) {
