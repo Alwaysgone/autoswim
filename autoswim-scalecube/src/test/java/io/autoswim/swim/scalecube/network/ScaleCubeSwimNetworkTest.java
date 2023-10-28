@@ -25,11 +25,11 @@ class ScaleCubeSwimNetworkTest {
 	void testSendAndReceiveMessage() {
 		Endpoint endpoint1 = Endpoint.of("localhost:" + SwimTestUtil.getFreePort());
 		Endpoint endpoint2 = Endpoint.of("localhost:" + SwimTestUtil.getFreePort());
-		ScaleCubeSwimNetwork network1 = new ScaleCubeSwimNetwork(AutoswimNetworkConfig.builder()
+		ScaleCubeAutoswimNetwork network1 = new ScaleCubeAutoswimNetwork(AutoswimNetworkConfig.builder()
 				.withMemberAlias(endpoint1.toHostAndPortString())
 				.withSwimPort(endpoint1.getPort())
 				.build());
-		ScaleCubeSwimNetwork network2 = new ScaleCubeSwimNetwork(AutoswimNetworkConfig.builder()
+		ScaleCubeAutoswimNetwork network2 = new ScaleCubeAutoswimNetwork(AutoswimNetworkConfig.builder()
 				.withMemberAlias(endpoint2.toHostAndPortString())
 				.withSwimPort(endpoint2.getPort())
 				.withSeedNodes(List.of(endpoint1))

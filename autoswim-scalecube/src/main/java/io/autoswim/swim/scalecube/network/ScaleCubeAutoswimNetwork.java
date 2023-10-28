@@ -24,14 +24,14 @@ import io.scalecube.cluster.transport.api.Message;
 import io.scalecube.net.Address;
 import io.scalecube.transport.netty.tcp.TcpTransportFactory;
 
-public class ScaleCubeSwimNetwork implements AutoswimNetwork {
-	private static final Logger LOG = LoggerFactory.getLogger(ScaleCubeSwimNetwork.class);
+public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
+	private static final Logger LOG = LoggerFactory.getLogger(ScaleCubeAutoswimNetwork.class);
 
 	private final AutoswimNetworkConfig swimNetworkConfig;
 	private final BlockingQueue<AutoswimMessage> receivedMessages = new LinkedBlockingQueue<>();
 	private Cluster cluster;
 
-	public ScaleCubeSwimNetwork(AutoswimNetworkConfig swimNetworkConfig) {
+	public ScaleCubeAutoswimNetwork(AutoswimNetworkConfig swimNetworkConfig) {
 		this.swimNetworkConfig = swimNetworkConfig;
 	}
 

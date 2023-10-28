@@ -26,7 +26,7 @@ import io.autoswim.messages.FullSyncMessage;
 import io.autoswim.messages.StartupMessage;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.swim.network.AutoswimNetworkConfig;
-import io.autoswim.swim.scalecube.network.ScaleCubeSwimNetwork;
+import io.autoswim.swim.scalecube.network.ScaleCubeAutoswimNetwork;
 import io.autoswim.test.SwimTestUtil;
 import io.autoswim.types.Endpoint;
 
@@ -40,11 +40,11 @@ class AutoswimRuntimeTest {
 	void testStartupMessage() {
 		Endpoint endpoint1 = Endpoint.of("localhost:" + SwimTestUtil.getFreePort());
 		Endpoint endpoint2 = Endpoint.of("localhost:" + SwimTestUtil.getFreePort());
-		AutoswimNetwork network1 = new ScaleCubeSwimNetwork(AutoswimNetworkConfig.builder()
+		AutoswimNetwork network1 = new ScaleCubeAutoswimNetwork(AutoswimNetworkConfig.builder()
 				.withMemberAlias(endpoint1.toHostAndPortString())
 				.withSwimPort(endpoint1.getPort())
 				.build());
-		AutoswimNetwork network2 = new ScaleCubeSwimNetwork(AutoswimNetworkConfig.builder()
+		AutoswimNetwork network2 = new ScaleCubeAutoswimNetwork(AutoswimNetworkConfig.builder()
 				.withMemberAlias(endpoint2.toHostAndPortString())
 				.withSwimPort(endpoint2.getPort())
 				.withSeedNodes(List.of(endpoint1))
