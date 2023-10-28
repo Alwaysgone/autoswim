@@ -16,8 +16,7 @@ import org.slf4j.LoggerFactory;
 import io.autoswim.AutoSwimException;
 import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
-import io.autoswim.swim.SwimRuntime;
-import io.autoswim.swim.messages.FullSyncMessage;
+import io.autoswim.messages.FullSyncMessage;
 import io.autoswim.types.Endpoint;
 
 public class AutoswimStateHandler {
@@ -26,14 +25,15 @@ public class AutoswimStateHandler {
 	
 	private final Path autoswimStatePath;
 	private final AtomicReference<Document> currentState = new AtomicReference<>();
-	private final SwimRuntime swimRuntime;
+	private final AutoswimRuntime swimRuntime;
 	private final OwnEndpointProvider ownEndpointProvider;
 	private final MessageIdGenerator messageIdGenerator;
 	
 	public AutoswimStateHandler(Path autoswimWorkingDir,
-			SwimRuntime swimRuntime,
+			AutoswimRuntime swimRuntime,
 			OwnEndpointProvider ownEndpointProvider,
-			MessageIdGenerator messageIdGenerator) {
+			MessageIdGenerator messageIdGenerator,
+			AutoswimStateInitializer stateIntializer) {
 		this.ownEndpointProvider = ownEndpointProvider;
 		this.messageIdGenerator = messageIdGenerator;
 		this.autoswimStatePath = autoswimWorkingDir.resolve(AUTOSWIM_STATE_FILE_NAME);
@@ -47,11 +47,8 @@ public class AutoswimStateHandler {
 				throw new AutoSwimException(String.format("Could not read Autoswim state at %s", autoswimStatePath), e);
 			}
 		} else {
-			Endpoint ownEndpoint = ownEndpointProvider.getOwnEndpoint();
-			String actorId = ownEndpoint.getHostname() + ownEndpoint.getPort();
-			Document newDoc = new Document(actorId.getBytes(StandardCharsets.UTF_8));
-			//TODO maybe init standard maps or others fields
-			currentState.set(newDoc);
+			Document intialDoc = stateIntializer.getInitialState();
+			currentState.set(intialDoc);
 			storeState();
 		}
 	}

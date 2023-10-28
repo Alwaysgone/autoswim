@@ -1,37 +1,19 @@
 package io.autoswim.types;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Objects;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import io.autoswim.AutoSwimException;
-
 @JsonDeserialize(builder = Endpoint.Builder.class)
 public class Endpoint implements Serializable {
 	private static final long serialVersionUID = 8557220143141942323L;
-	private final InetAddress address;
 	private final String hostname;
 	private final int port;
 
 	private Endpoint(Builder builder) {
-		if(builder.address == null) {
-			try {
-				this.address = InetAddress.getByName(builder.hostname);
-			} catch (UnknownHostException e) {
-				throw new AutoSwimException(String.format("Could not resolve hostname \"%s\"", builder.hostname), e);
-			}
-		} else {			
-			this.address = builder.address;
-		}
 		this.hostname = builder.hostname;
 		this.port = builder.port;
-	}
-	
-	public InetAddress getAddress() {
-		return address;
 	}
 	
 	public String getHostname() {
@@ -41,10 +23,14 @@ public class Endpoint implements Serializable {
 	public int getPort() {
 		return port;
 	}
+	
+	public String toHostAndPortString() {
+		return String.format("%s:%s", hostname, port);
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, hostname, port);
+		return Objects.hash(hostname, port);
 	}
 
 	@Override
@@ -56,12 +42,12 @@ public class Endpoint implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Endpoint other = (Endpoint) obj;
-		return Objects.equals(address, other.address) && Objects.equals(hostname, other.hostname) && port == other.port;
+		return Objects.equals(hostname, other.hostname) && port == other.port;
 	}
 
 	@Override
 	public String toString() {
-		return "Endpoint [address=" + address + ", hostname=" + hostname + ", port=" + port + "]";
+		return "Endpoint [hostname=" + hostname + ", port=" + port + "]";
 	}
 	
 	public static Endpoint of(String endpoint) {
@@ -81,7 +67,6 @@ public class Endpoint implements Serializable {
 	}
 
 	public static final class Builder {
-		private InetAddress address;
 		private String hostname;
 		private int port;
 
@@ -89,14 +74,8 @@ public class Endpoint implements Serializable {
 		}
 
 		private Builder(Endpoint endpoint) {
-			this.address = endpoint.address;
 			this.hostname = endpoint.hostname;
 			this.port = endpoint.port;
-		}
-
-		public Builder withAddress(InetAddress address) {
-			this.address = address;
-			return this;
 		}
 
 		public Builder withHostname(String hostname) {

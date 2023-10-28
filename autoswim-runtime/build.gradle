@@ -1,11 +1,12 @@
 dependencies {
 
 	api project(':autoswim-core')
-	api project(':autoswim-swim')
+	api project(':autoswim-scalecube')
 
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
-
+	testImplementation 'org.awaitility:awaitility:4.2.0'
+	
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
