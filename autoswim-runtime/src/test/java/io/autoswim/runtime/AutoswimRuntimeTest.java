@@ -83,11 +83,12 @@ class AutoswimRuntimeTest {
 		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> testAutoswimMessageHandler2.fullSyncMessages.size() > 0);
 		
 		assertThat(testAutoswimMessageHandler1.startupMessages.size(), is(1));
-		assertThat(testAutoswimMessageHandler1.fullSyncMessages.size(), is(1));
+		// since both nodes send a full sync on startup there are 2 expected messages
+		assertThat(testAutoswimMessageHandler1.fullSyncMessages.size(), is(2));
 		FullSyncMessage fullSyncMessage1 = testAutoswimMessageHandler1.fullSyncMessages.get(0);
 		assertThat(fullSyncMessage1.getSender(), is(endpoint2));
 		assertThat(testAutoswimMessageHandler2.startupMessages.size(), is(1));
-		assertThat(testAutoswimMessageHandler2.fullSyncMessages.size(), is(1));
+		assertThat(testAutoswimMessageHandler2.fullSyncMessages.size(), is(2));
 		FullSyncMessage fullSyncMessage2 = testAutoswimMessageHandler2.fullSyncMessages.get(0);
 		assertThat(fullSyncMessage2.getSender(), is(endpoint1));
 	}

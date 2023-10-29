@@ -9,6 +9,7 @@ import org.automerge.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.autoswim.Cancellable;
 import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
 import io.autoswim.messages.AutoswimMessage;
@@ -79,8 +80,9 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 		swimNetwork.stop();
 	}
 
-	public void registerMessageHandler(AutoswimMessageHandler messageHandler) {
+	public Cancellable registerMessageHandler(AutoswimMessageHandler messageHandler) {
 		messageHandlers.add(messageHandler);
+		return () -> messageHandlers.remove(messageHandler);
 	}
 
 	private void receive() {
