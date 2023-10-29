@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.autoswim.AutoSwimException;
+import io.autoswim.AutoswimException;
 import io.autoswim.messages.AutoswimMessage;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.swim.network.AutoswimNetworkConfig;
@@ -84,7 +84,7 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 		try {
 			return receivedMessages.take();
 		} catch (InterruptedException e) {
-			throw new AutoSwimException("Got interrupted while waiting for the next SwimMessage", e);
+			throw new AutoswimException("Got interrupted while waiting for the next SwimMessage", e);
 		}
 	}
 

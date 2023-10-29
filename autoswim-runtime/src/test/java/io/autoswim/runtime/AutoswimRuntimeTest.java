@@ -52,21 +52,27 @@ class AutoswimRuntimeTest {
 				.build());
 		MessageIdGenerator messageIdGenerator = new UuidMessageIdGenerator();
 		
-		AutoswimRuntime swimRuntime1 = new AutoswimRuntime(network1, new OwnEndpointProvider(endpoint1), messageIdGenerator);
 		Path autoswimPath1 = autoswimTempDir.toPath().resolve("autoswim1");
 		autoswimPath1.toFile().mkdirs();
 		OwnEndpointProvider ownEndpointProvider1 = new OwnEndpointProvider(endpoint1);
-		AutoswimStateHandler stateHandler1 = new AutoswimStateHandler(autoswimPath1, swimRuntime1, ownEndpointProvider1, messageIdGenerator, new TestAutoswimStateInitializer(ownEndpointProvider1));
-		new AutoswimMessageHandlerImpl(stateHandler1, ownEndpointProvider1, messageIdGenerator, swimRuntime1);
+		AutoswimStateHandler stateHandler1 = new AutoswimStateHandler(autoswimPath1, new TestAutoswimStateInitializer(ownEndpointProvider1));
+		AutoswimRuntime swimRuntime1 = new AutoswimRuntime(AutoswimConfig.builder().build(),
+				network1,
+				stateHandler1,
+				ownEndpointProvider1,
+				messageIdGenerator);
 		TestAutoswimMessageHandler testAutoswimMessageHandler1 = new TestAutoswimMessageHandler();
 		swimRuntime1.registerMessageHandler(testAutoswimMessageHandler1);
 		
-		AutoswimRuntime swimRuntime2 = new AutoswimRuntime(network2, new OwnEndpointProvider(endpoint2), messageIdGenerator);
 		Path autoswimPath2 = autoswimTempDir.toPath().resolve("autoswim2");
 		autoswimPath2.toFile().mkdirs();
 		OwnEndpointProvider ownEndpointProvider2 = new OwnEndpointProvider(endpoint2);
-		AutoswimStateHandler stateHandler2 = new AutoswimStateHandler(autoswimPath2, swimRuntime2, ownEndpointProvider2, messageIdGenerator, new TestAutoswimStateInitializer(ownEndpointProvider2));
-		new AutoswimMessageHandlerImpl(stateHandler2, ownEndpointProvider2, messageIdGenerator, swimRuntime2);
+		AutoswimStateHandler stateHandler2 = new AutoswimStateHandler(autoswimPath2, new TestAutoswimStateInitializer(ownEndpointProvider2));
+		AutoswimRuntime swimRuntime2 = new AutoswimRuntime(AutoswimConfig.builder().build(),
+				network2,
+				stateHandler2,
+				ownEndpointProvider2,
+				messageIdGenerator);
 		TestAutoswimMessageHandler testAutoswimMessageHandler2 = new TestAutoswimMessageHandler();
 		swimRuntime2.registerMessageHandler(testAutoswimMessageHandler2);
 		
