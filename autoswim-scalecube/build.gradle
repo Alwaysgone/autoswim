@@ -2,6 +2,7 @@ dependencies {
 
 	api project(':autoswim-core')
 
+	testImplementation project(':autoswim-test')
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testImplementation 'org.hamcrest:hamcrest:2.1'

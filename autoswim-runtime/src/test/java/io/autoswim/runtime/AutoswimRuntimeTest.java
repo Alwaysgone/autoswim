@@ -23,6 +23,7 @@ import io.autoswim.OwnEndpointProvider;
 import io.autoswim.UuidMessageIdGenerator;
 import io.autoswim.messages.AutoswimMessageHandler;
 import io.autoswim.messages.FullSyncMessage;
+import io.autoswim.messages.IncrementalSyncMessage;
 import io.autoswim.messages.StartupMessage;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.swim.network.AutoswimNetworkConfig;
@@ -118,6 +119,11 @@ class AutoswimRuntimeTest {
 		@Override
 		public void handle(FullSyncMessage fullSyncMessage) {
 			fullSyncMessages.add(fullSyncMessage);
+		}
+
+		@Override
+		public void handle(IncrementalSyncMessage incrementalSyncMessage) {
+			// not needed
 		}
 	}
 }

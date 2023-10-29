@@ -18,11 +18,6 @@ public class StartupMessage extends AutoswimMessage {
 	public void handle(AutoswimMessageHandler handler) {
 		handler.handle(this);	
 	}
-	
-	@Override
-	public byte getMessageType() {
-		return (byte)'s';
-	}
 
 	@Override
 	public String toString() {

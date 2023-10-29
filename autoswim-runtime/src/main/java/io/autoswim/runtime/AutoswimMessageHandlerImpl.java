@@ -10,6 +10,7 @@ import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
 import io.autoswim.messages.AutoswimMessageHandler;
 import io.autoswim.messages.FullSyncMessage;
+import io.autoswim.messages.IncrementalSyncMessage;
 import io.autoswim.messages.StartupMessage;
 
 public class AutoswimMessageHandlerImpl implements AutoswimMessageHandler{	
@@ -48,6 +49,15 @@ public class AutoswimMessageHandlerImpl implements AutoswimMessageHandler{
 		LOG.info("Merging FullSyncMessage from {} with id {} into local state ...", fullSyncMessage.getSender(), fullSyncMessage.getId());
 		stateHandler.updateState(d -> {
 			d.merge(otherDoc);
+			return d;
+		}, false);
+	}
+
+	@Override
+	public void handle(IncrementalSyncMessage incrementalSyncMessage) {
+		LOG.info("Applying incremental change set from {}", incrementalSyncMessage.getSender());
+		stateHandler.updateState(d -> {
+			d.applyEncodedChanges(incrementalSyncMessage.getChangeSet());
 			return d;
 		}, false);
 	}

@@ -45,8 +45,6 @@ public abstract class AutoswimMessage implements Serializable {
 	}
 	
 	public abstract void handle(AutoswimMessageHandler handler);
-	
-	public abstract byte getMessageType();
 
 	@Override
 	public int hashCode() {

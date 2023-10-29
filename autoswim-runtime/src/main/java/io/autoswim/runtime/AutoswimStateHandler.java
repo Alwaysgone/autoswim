@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 
+import org.automerge.ChangeHash;
 import org.automerge.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +70,11 @@ public class AutoswimStateHandler {
 	}
 	
 	void updateState(UnaryOperator<Document> update, boolean scheduleUpdate) {
+		ChangeHash[] currentHeads = currentState.get().getHeads();
 		Document newDocument = currentState.updateAndGet(update);
+		byte[] updateChanges = newDocument.encodeChangesSince(currentHeads);
 		if(scheduleUpdate) {
+			
 			//TODO only send delta
 			swimRuntime.scheduleMessage(FullSyncMessage.builder()
 					.withCreatedAt(Instant.now())

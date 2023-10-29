@@ -3,6 +3,7 @@ dependencies {
 	api project(':autoswim-core')
 	api project(':autoswim-scalecube')
 
+	testImplementation project(':autoswim-test')
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 	testImplementation 'org.awaitility:awaitility:4.2.0'

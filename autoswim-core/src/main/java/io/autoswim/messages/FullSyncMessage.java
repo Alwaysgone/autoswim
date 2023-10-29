@@ -27,11 +27,6 @@ public class FullSyncMessage extends AutoswimMessage {
 	}
 	
 	@Override
-	public byte getMessageType() {
-		return (byte)'f';
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
