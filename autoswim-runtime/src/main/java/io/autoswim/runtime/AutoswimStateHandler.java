@@ -1,9 +1,12 @@
 package io.autoswim.runtime;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
 
@@ -64,5 +67,33 @@ public class AutoswimStateHandler {
 	
 	public byte[] getSerializedState() {
 		return currentState.get().save();
+	}
+	
+	public byte[][] getCurrentHeads() {
+		ChangeHash[] heads = currentState.get().getHeads();
+		return Arrays.stream(heads)
+		.map(h -> h.getBytes())
+		.toArray(i -> new byte[i][]);
+	}
+	
+	public byte[] getChangesSince(byte[][] heads) {
+		ChangeHash[] changeHashes = Arrays.stream(heads)
+		.map(this::toChangeHash)
+		.toArray(i -> new ChangeHash[i]);
+		return currentState.get().encodeChangesSince(changeHashes);
+	}
+	
+	private ChangeHash toChangeHash(byte[] head) {
+		// this is necessary since ChangeHash does not implement Serializable and has no publicly available
+		// way to be constructed
+		@SuppressWarnings("unchecked")
+		Constructor<ChangeHash> constructor = (Constructor<ChangeHash>)ChangeHash.class.getDeclaredConstructors()[0];
+		constructor.setAccessible(true);
+		try {
+			return constructor.newInstance(head);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			throw new AutoswimException("Could not create ChangeHash instance", e);
+		}
 	}
 }

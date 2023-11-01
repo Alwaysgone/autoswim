@@ -7,6 +7,7 @@ dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
 	testImplementation 'org.awaitility:awaitility:4.2.0'
+	testImplementation 'ch.qos.logback:logback-classic:1.4.11'
 	
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 

@@ -6,4 +6,6 @@ public interface AutoswimMessageHandler {
 	public void handle(FullSyncMessage fullSyncMessage);
 	
 	public void handle(IncrementalSyncMessage incrementalSyncMessage);
+	
+	public void handle(RequestSyncMessage requestSyncMessage);
 }

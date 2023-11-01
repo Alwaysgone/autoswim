@@ -9,6 +9,7 @@ import org.automerge.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.autoswim.AutoswimRequestSyncScheduler;
 import io.autoswim.Cancellable;
 import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
@@ -16,6 +17,7 @@ import io.autoswim.messages.AutoswimMessage;
 import io.autoswim.messages.AutoswimMessageHandler;
 import io.autoswim.messages.FullSyncMessage;
 import io.autoswim.messages.IncrementalSyncMessage;
+import io.autoswim.messages.RequestSyncMessage;
 import io.autoswim.messages.StartupMessage;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.types.Endpoint;
@@ -28,23 +30,27 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 	private final AutoswimStateHandler stateHandler;
 	private final MessageIdGenerator messageIdGenerator;
 	private final Endpoint ownEndpoint;
+	private final AutoswimRequestSyncScheduler requestSyncScheduler;
 	private final List<AutoswimMessageHandler> messageHandlers = new ArrayList<>();
-
+	
 	private boolean running = false;
 	private Thread receiveThread;
+
 
 	public AutoswimRuntime(
 			AutoswimConfig config,
 			AutoswimNetwork swimNetwork,
 			AutoswimStateHandler stateHandler,
 			OwnEndpointProvider ownEndpointProvider,
-			MessageIdGenerator messageIdGenerator
+			MessageIdGenerator messageIdGenerator,
+			AutoswimRequestSyncScheduler requestSyncScheduler
 			) {
 		this.config = config;
 		this.swimNetwork = swimNetwork;
 		this.stateHandler = stateHandler;
 		this.messageIdGenerator = messageIdGenerator;
 		this.ownEndpoint = ownEndpointProvider.getOwnEndpoint();
+		this.requestSyncScheduler = requestSyncScheduler;
 	}
 
 	public void start() {
@@ -58,24 +64,26 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 		running = true;
 		receiveThread = new Thread(() -> receive());
 		receiveThread.start();
-		// the startup message tells all the other nodes to send their full state so that remote changes
-		// can be merged into the local state
+		requestSyncScheduler.start();
+		// the startup message is simply an informative message and does not serve a specific purpose
+		// other than indicating a startup of a node
 		scheduleMessage(StartupMessage.builder()
-				.withId(messageIdGenerator.generateId())
 				.withCreatedAt(Instant.now())
+				.withId(messageIdGenerator.generateId())
 				.withSender(ownEndpoint)
 				.build());
 		// also sending the current local state so that other nodes can get possible offline changes
-		scheduleMessage(FullSyncMessage.builder()
-				.withId(messageIdGenerator.generateId())
+		scheduleMessage(RequestSyncMessage.builder()
 				.withCreatedAt(Instant.now())
+				.withId(messageIdGenerator.generateId())
 				.withSender(ownEndpoint)
-				.withState(stateHandler.getSerializedState())
+				.withHeads(stateHandler.getCurrentHeads())
 				.build());
 	}
 
 	public void stop() {
 		running = false;
+		requestSyncScheduler.stop();
 		receiveThread.interrupt();
 		swimNetwork.stop();
 	}
@@ -111,13 +119,12 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 
 	@Override
 	public void handle(StartupMessage startupMessage) {
-		LOG.info("Sending full state update because of StartupMessage from {} with id {} ...", startupMessage.getSender(), startupMessage.getId());
-		scheduleMessage(FullSyncMessage
-				.builder()
+		LOG.info("{}: Sending RequestSyncMessage because of StartupMessage from {} with id {} ...", ownEndpoint.toHostAndPortString(), startupMessage.getSender(), startupMessage.getId());
+		scheduleMessage(RequestSyncMessage.builder()
 				.withCreatedAt(Instant.now())
 				.withId(messageIdGenerator.generateId())
 				.withSender(ownEndpoint)
-				.withState(stateHandler.getSerializedState())
+				.withHeads(stateHandler.getCurrentHeads())
 				.build());
 	}
 
@@ -133,10 +140,27 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 
 	@Override
 	public void handle(IncrementalSyncMessage incrementalSyncMessage) {
-		LOG.info("Applying incremental change set from {}", incrementalSyncMessage.getSender());
+		LOG.info("{}: Applying incremental change set from {}", ownEndpoint.toHostAndPortString(), incrementalSyncMessage.getSender());
 		stateHandler.updateState(d -> {
 			d.applyEncodedChanges(incrementalSyncMessage.getChangeSet());
 			return d;
 		});
+	}
+
+	@Override
+	public void handle(RequestSyncMessage requestSyncMessage) {
+		LOG.info("{}: Received sync request from {}", ownEndpoint.toHostAndPortString(), requestSyncMessage.getSender());
+		byte[] changesSince = stateHandler.getChangesSince(requestSyncMessage.getHeads());
+		if(changesSince.length > 0) {
+			LOG.info("Detected changes, sending incremental changes ...");
+			scheduleMessage(IncrementalSyncMessage.builder()
+					.withCreatedAt(Instant.now())
+					.withId(messageIdGenerator.generateId())
+					.withChangeSet(changesSince)
+					.withSender(ownEndpoint)
+					.build());
+		} else {
+			LOG.info("No changes found, not sending incremental message");			
+		}
 	}
 }
