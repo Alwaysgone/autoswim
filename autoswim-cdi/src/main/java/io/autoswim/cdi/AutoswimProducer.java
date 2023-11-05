@@ -9,6 +9,7 @@ import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
 import io.autoswim.UuidMessageIdGenerator;
 import io.autoswim.runtime.AutoswimConfig;
+import io.autoswim.runtime.AutoswimController;
 import io.autoswim.runtime.AutoswimRuntime;
 import io.autoswim.runtime.AutoswimStateHandler;
 import io.autoswim.runtime.AutoswimStateInitializer;
@@ -79,5 +80,14 @@ public class AutoswimProducer {
 		} catch (UnknownHostException e) {
 			throw new AutoswimException("Could not get hostname", e);
 		}
+	}
+	
+	@ApplicationScoped
+	@Produces
+	public AutoswimController produceAutoswimController(AutoswimRuntime runtime,
+			AutoswimStateHandler stateHandler,
+			MessageIdGenerator messageIdGenerator,
+			OwnEndpointProvider ownEndpointProvider) {
+		return new AutoswimController(runtime, stateHandler, messageIdGenerator, ownEndpointProvider);
 	}
 }

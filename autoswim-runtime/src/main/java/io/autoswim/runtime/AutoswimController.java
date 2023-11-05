@@ -3,7 +3,6 @@ package io.autoswim.runtime;
 import java.time.Instant;
 import java.util.function.UnaryOperator;
 
-import org.automerge.ChangeHash;
 import org.automerge.Document;
 
 import io.autoswim.MessageIdGenerator;
