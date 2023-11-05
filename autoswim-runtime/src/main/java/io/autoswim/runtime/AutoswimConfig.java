@@ -20,8 +20,7 @@ public class AutoswimConfig {
 	 * all updates need to be handled by a user provided message handler.
 	 * This is useful if there is either a bug in the default implementation or
 	 * the user needs to apply additional logic during sync operations.
-	 * @param registerDefaultMessageHandler whether to enable registering the default message handler or not
-	 * @return the builder instance
+	 * @return true if the default message handler should be registered; otherwise false
 	 */
 	public boolean isRegisterDefaultMessageHandler() {
 		return registerDefaultMessageHandler;

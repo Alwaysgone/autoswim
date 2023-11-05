@@ -100,6 +100,9 @@ class AutoswimRuntimeTest {
 		swimRuntime1.start();
 		swimRuntime2.start();
 		
+		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> swimRuntime1.getMembers().size() == 2);
+		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> swimRuntime2.getMembers().size() == 2);
+		
 		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> testAutoswimMessageHandler1.incrementalSyncMessages.size() > 0);
 		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> testAutoswimMessageHandler1.requestSyncMessages.size() > 0);
 		Awaitility.await().atMost(Duration.ofSeconds(5L)).until(() -> testAutoswimMessageHandler2.requestSyncMessages.size() > 0);
