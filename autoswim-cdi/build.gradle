@@ -1,0 +1,27 @@
+dependencies {
+
+	api project(':autoswim-core')
+	api project(':autoswim-runtime')
+	api project(':autoswim-scalecube')
+
+	testImplementation project(':autoswim-test')
+    // Use JUnit Jupiter for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+	testImplementation 'org.awaitility:awaitility:4.2.0'
+	testImplementation 'ch.qos.logback:logback-classic:1.4.11'
+	
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // This dependency is exported to consumers, that is to say found on their compile classpath.
+    //api 'org.apache.commons:commons-math3:3.6.1'
+    //api 'org.automerge:automerge:0.0.5'
+    
+    implementation 'org.slf4j:slf4j-api:2.0.9'
+	implementation 'jakarta.enterprise:jakarta.enterprise.cdi-api:4.0.0'
+
+}
+
+tasks.named('test') {
+    // Use JUnit Platform for unit tests.
+    useJUnitPlatform()
+}

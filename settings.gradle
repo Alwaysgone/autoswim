@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = 'autoswim'
-include 'autoswim-core', 'autoswim-runtime', 'autoswim-scalecube', 'autoswim-test'
+include 'autoswim-core', 'autoswim-runtime', 'autoswim-scalecube', 'autoswim-test', 'autoswim-cdi'
