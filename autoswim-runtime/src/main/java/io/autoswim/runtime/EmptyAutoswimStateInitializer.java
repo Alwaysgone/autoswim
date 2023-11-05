@@ -13,7 +13,7 @@ public class EmptyAutoswimStateInitializer implements AutoswimStateInitializer {
 
 	@Override
 	public Document getInitialState() {
-		try(InputStream is = this.getClass().getClassLoader().getSystemResourceAsStream("initial-state.dat")) {
+		try(InputStream is = ClassLoader.getSystemResourceAsStream("initial-state.dat")) {
 			byte[] initialState = ByteStreams.toByteArray(is);			
 			return Document.load(initialState);
 		} catch (IOException e) {

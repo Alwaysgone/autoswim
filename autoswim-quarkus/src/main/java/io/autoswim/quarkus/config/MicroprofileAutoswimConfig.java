@@ -13,16 +13,16 @@ public class MicroprofileAutoswimConfig {
 	@ConfigProperty(name = "autoswim.port")
 	int swimPort;
 	
-	@ConfigProperty(name = "autoswim.workingDir")
+	@ConfigProperty(name = "autoswim.working-dir")
 	Path workingDir;
 	
-	@ConfigProperty(name = "autoswim.registerDefaultMessageHandler", defaultValue = "true")
+	@ConfigProperty(name = "autoswim.register-default-message-handler", defaultValue = "true")
 	boolean registerDefaultMessageHandler;
 	
-	@ConfigProperty(name = "autoswim.seedNodes")
+	@ConfigProperty(name = "autoswim.seed-nodes")
 	List<String> seedNodes;
 	
-	@ConfigProperty(name = "autoswim.memberAlias")
+	@ConfigProperty(name = "autoswim.member-alias")
 	Optional<String> memberAlias;
 
 	public int getSwimPort() {
