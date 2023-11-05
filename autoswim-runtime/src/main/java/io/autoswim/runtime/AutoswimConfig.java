@@ -43,7 +43,7 @@ public class AutoswimConfig {
 	}
 
 	public static final class Builder {
-		private boolean registerDefaultMessageHandler;
+		private boolean registerDefaultMessageHandler = true;
 		private Path autoswimWorkingDir;
 		private AutoswimNetworkConfig networkConfig;
 
