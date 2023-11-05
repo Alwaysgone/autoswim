@@ -1,7 +1,10 @@
 package io.autoswim.quarkus;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.stream.Collectors;
 
+import io.autoswim.AutoswimException;
 import io.autoswim.OwnEndpointProvider;
 import io.autoswim.quarkus.config.MicroprofileAutoswimConfig;
 import io.autoswim.runtime.AutoswimConfig;
@@ -27,5 +30,19 @@ public class QuarkusAutoswimConfigProducer {
 								.collect(Collectors.toList()))
 						.build())
 				.build();
+	}
+	
+	@ApplicationScoped
+	@Produces
+	public OwnEndpointProvider produceOwnEndpointProvider(MicroprofileAutoswimConfig config) {
+		try {
+			String hostname = InetAddress.getLocalHost().getHostName();
+			return new OwnEndpointProvider(Endpoint.builder()
+					.withHostname(hostname)
+					.withPort(config.getSwimPort())
+					.build());
+		} catch (UnknownHostException e) {
+			throw new AutoswimException("Could not get hostname", e);
+		}
 	}
 }

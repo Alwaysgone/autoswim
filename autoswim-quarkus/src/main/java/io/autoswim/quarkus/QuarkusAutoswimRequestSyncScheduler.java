@@ -13,9 +13,13 @@ import io.autoswim.runtime.AutoswimStateHandler;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.types.Endpoint;
 import io.quarkus.scheduler.Scheduled;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Alternative;
 import jakarta.inject.Inject;
 
+@Alternative
+@Priority(1)
 @ApplicationScoped
 public class QuarkusAutoswimRequestSyncScheduler implements AutoswimRequestSyncScheduler {
 	private static final Logger LOG = LoggerFactory.getLogger(QuarkusAutoswimRequestSyncScheduler.class);

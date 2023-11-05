@@ -70,20 +70,6 @@ public class AutoswimProducer {
 	
 	@ApplicationScoped
 	@Produces
-	public OwnEndpointProvider produceOwnEndpointProvider(AutoswimConfig config) {
-		try {
-			String hostname = InetAddress.getLocalHost().getHostName();
-			return new OwnEndpointProvider(Endpoint.builder()
-					.withHostname(hostname)
-					.withPort(config.getNetworkConfig().getSwimPort())
-					.build());
-		} catch (UnknownHostException e) {
-			throw new AutoswimException("Could not get hostname", e);
-		}
-	}
-	
-	@ApplicationScoped
-	@Produces
 	public AutoswimController produceAutoswimController(AutoswimRuntime runtime,
 			AutoswimStateHandler stateHandler,
 			MessageIdGenerator messageIdGenerator,
