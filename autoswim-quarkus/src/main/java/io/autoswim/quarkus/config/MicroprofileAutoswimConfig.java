@@ -1,6 +1,7 @@
 package io.autoswim.quarkus.config;
 
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +20,8 @@ public class MicroprofileAutoswimConfig {
 	@ConfigProperty(name = "autoswim.register-default-message-handler", defaultValue = "true")
 	boolean registerDefaultMessageHandler;
 	
-	@ConfigProperty(name = "autoswim.seed-nodes", defaultValue = "")
-	List<String> seedNodes;
+	@ConfigProperty(name = "autoswim.seed-nodes")
+	Optional<List<String>> seedNodes;
 	
 	@ConfigProperty(name = "autoswim.member-alias")
 	Optional<String> memberAlias;
@@ -38,7 +39,7 @@ public class MicroprofileAutoswimConfig {
 	}
 
 	public List<String> getSeedNodes() {
-		return seedNodes;
+		return seedNodes.orElse(Collections.emptyList());
 	}
 
 	public Optional<String> getMemberAlias() {

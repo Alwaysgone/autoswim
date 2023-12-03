@@ -1,9 +1,5 @@
 package io.autoswim.cdi;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import io.autoswim.AutoswimException;
 import io.autoswim.AutoswimRequestSyncScheduler;
 import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
@@ -17,7 +13,6 @@ import io.autoswim.runtime.EmptyAutoswimStateInitializer;
 import io.autoswim.runtime.ExecutorAutoswimRequestSyncScheduler;
 import io.autoswim.swim.network.AutoswimNetwork;
 import io.autoswim.swim.scalecube.network.ScaleCubeAutoswimNetwork;
-import io.autoswim.types.Endpoint;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 
