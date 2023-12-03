@@ -134,19 +134,13 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 	public void handle(FullSyncMessage fullSyncMessage) {
 		Document otherDoc = Document.load(fullSyncMessage.getState());
 		LOG.info("Merging FullSyncMessage from {} with id {} into local state ...", fullSyncMessage.getSender(), fullSyncMessage.getId());
-		stateHandler.updateState(d -> {
-			d.merge(otherDoc);
-			return d;
-		});
+		stateHandler.mergeDocument(otherDoc);
 	}
 
 	@Override
 	public void handle(IncrementalSyncMessage incrementalSyncMessage) {
 		LOG.info("{}: Applying incremental change set from {}", ownEndpoint.toHostAndPortString(), incrementalSyncMessage.getSender());
-		stateHandler.updateState(d -> {
-			d.applyEncodedChanges(incrementalSyncMessage.getChangeSet());
-			return d;
-		});
+		stateHandler.applyUpdate(incrementalSyncMessage.getChangeSet());
 	}
 
 	@Override

@@ -1,9 +1,10 @@
 package io.autoswim.runtime;
 
 import java.time.Instant;
-import java.util.function.UnaryOperator;
+import java.util.function.Consumer;
 
 import org.automerge.Document;
+import org.automerge.Transaction;
 
 import io.autoswim.MessageIdGenerator;
 import io.autoswim.OwnEndpointProvider;
@@ -30,7 +31,7 @@ public class AutoswimController {
 		return stateHandler.getCurrentState();
 	}
 	
-	public void updateState(UnaryOperator<Document> update) {
+	public void updateState(Consumer<Transaction> update) {
 		byte[] changeSet = stateHandler.updateState(update);
 		runtime.scheduleMessage(IncrementalSyncMessage.builder()
 				.withChangeSet(changeSet)
