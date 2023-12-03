@@ -1,6 +1,7 @@
 allprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
+	apply plugin: 'eclipse'
 
     group = 'io.autoswim'
     version = '1.0.0-SNAPSHOT'

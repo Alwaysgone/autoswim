@@ -19,7 +19,7 @@ public class MicroprofileAutoswimConfig {
 	@ConfigProperty(name = "autoswim.register-default-message-handler", defaultValue = "true")
 	boolean registerDefaultMessageHandler;
 	
-	@ConfigProperty(name = "autoswim.seed-nodes")
+	@ConfigProperty(name = "autoswim.seed-nodes", defaultValue = "")
 	List<String> seedNodes;
 	
 	@ConfigProperty(name = "autoswim.member-alias")
