@@ -23,7 +23,6 @@ public class AutoswimStateHandler {
 
 	private final Path autoswimStatePath;
 	private final Document document;
-	//	private final AtomicReference<Document> currentState = new AtomicReference<>();
 
 	public AutoswimStateHandler(Path autoswimWorkingDir,
 			AutoswimStateInitializer stateIntializer) {
@@ -79,35 +78,6 @@ public class AutoswimStateHandler {
 			storeState(document);
 		}
 	}
-
-	//	public byte[] updateState(UnaryOperator<Document> update) {
-	//		ChangeHash[] currentHeads;
-	//		Document newDocument;
-	//		synchronized(currentState) {
-	//			currentHeads = currentState.get().getHeads();
-	//			newDocument = currentState.updateAndGet(update);
-	//		}
-	//		Document doc = new Document();
-	//		PatchLog log = null;
-	//		SyncState self = new SyncState(); //create much earlier
-	//		
-	//		Document recv = doc.fork();
-	//		
-	//		try(Transaction tx = doc.startTransaction(log)) {
-	//			//execute user function; consume(tx)
-	//			tx.commit();
-	//		}
-	//		Optional<byte[]> syncmsg = doc.generateSyncMessage(self);
-	//		
-	//		//second time empty
-	//		Optional<byte[]> syncmsg = doc.generateSyncMessage(self);
-	//		
-	//		List<Patch> patches = doc.makePatches(log);
-	//		
-	//		byte[] updateChanges = newDocument.encodeChangesSince(currentHeads);
-	//		storeState(newDocument);
-	//		return updateChanges;
-	//	}
 
 	public Document getCurrentState() {
 		return document;

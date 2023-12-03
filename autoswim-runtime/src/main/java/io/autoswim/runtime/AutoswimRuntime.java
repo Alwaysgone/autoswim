@@ -112,6 +112,7 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 	}
 
 	public void scheduleMessage(AutoswimMessage message) {
+		//TODO extend this so that messages are sent in bulk to reduce chatter
 		swimNetwork.sendMessage(message);
 	}
 
