@@ -67,7 +67,9 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 	
 	@Override
 	public void stop() {
-		cluster.shutdown();
+		if(cluster != null) {
+			cluster.shutdown();	
+		}
 	}
 	
 	@Override

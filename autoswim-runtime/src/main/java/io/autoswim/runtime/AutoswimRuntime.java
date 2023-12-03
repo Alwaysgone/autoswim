@@ -32,7 +32,7 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 	private final Endpoint ownEndpoint;
 	private final AutoswimRequestSyncScheduler requestSyncScheduler;
 	private final List<AutoswimMessageHandler> messageHandlers = new ArrayList<>();
-	
+
 	private boolean running = false;
 	private Thread receiveThread;
 
@@ -84,7 +84,9 @@ public class AutoswimRuntime implements AutoswimMessageHandler {
 	public void stop() {
 		running = false;
 		requestSyncScheduler.stop();
-		receiveThread.interrupt();
+		if(receiveThread != null) {
+			receiveThread.interrupt();
+		}
 		swimNetwork.stop();
 	}
 
