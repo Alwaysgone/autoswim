@@ -48,7 +48,7 @@ public class IncrementalSyncMessage extends AutoswimMessage {
 
 	@Override
 	public String toString() {
-		return "IncrementalSyncMessage [changeSet=" + Arrays.toString(changeSet) + "]";
+		return "IncrementalSyncMessage [changeSet=" + changeSet.length + " bytes]";
 	}
 	
 

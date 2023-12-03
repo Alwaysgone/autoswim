@@ -48,7 +48,7 @@ public class FullSyncMessage extends AutoswimMessage {
 
 	@Override
 	public String toString() {
-		return "FullSync [state=" + Arrays.toString(state) + "]";
+		return "FullSync [state=" + state.length + " bytes]";
 	}
 
 	public static Builder builder() {
