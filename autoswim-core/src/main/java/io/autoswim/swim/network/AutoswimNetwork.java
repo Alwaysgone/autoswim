@@ -10,6 +10,8 @@ public interface AutoswimNetwork {
 	
 	void stop();
 	
+	boolean isStarted();
+	
 	AutoswimMessage receiveMessage();
 	
 	void sendMessage(AutoswimMessage swimMessage);

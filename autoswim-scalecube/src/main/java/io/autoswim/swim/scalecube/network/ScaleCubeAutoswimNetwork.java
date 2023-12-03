@@ -30,6 +30,7 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 	private final AutoswimNetworkConfig swimNetworkConfig;
 	private final BlockingQueue<AutoswimMessage> receivedMessages = new LinkedBlockingQueue<>();
 	private Cluster cluster;
+	private boolean isStarted = false;
 
 	public ScaleCubeAutoswimNetwork(AutoswimNetworkConfig swimNetworkConfig) {
 		this.swimNetworkConfig = swimNetworkConfig;
@@ -54,6 +55,7 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 				.transportFactory(TcpTransportFactory::new)
 				.handler(cluster -> new SwimClusterMessageHandler(receivedMessages))
 				.startAwait();
+		isStarted = true;
 		LOG.info("Started up on {} with these members: {}", cluster.address(), cluster.members());
 	}
 	
@@ -66,9 +68,15 @@ public class ScaleCubeAutoswimNetwork implements AutoswimNetwork {
 	}
 	
 	@Override
+	public boolean isStarted() {
+		return isStarted;
+	}
+	
+	@Override
 	public void stop() {
-		if(cluster != null) {
+		if(isStarted) {
 			cluster.shutdown();	
+			isStarted = false;
 		}
 	}
 	

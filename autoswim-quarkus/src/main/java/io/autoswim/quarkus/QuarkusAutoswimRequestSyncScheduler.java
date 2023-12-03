@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class QuarkusAutoswimRequestSyncScheduler implements AutoswimRequestSyncScheduler {
 	private static final Logger LOG = LoggerFactory.getLogger(QuarkusAutoswimRequestSyncScheduler.class);
-	
+
 	private final AutoswimNetwork swimNetwork;
 	private final AutoswimStateHandler stateHandler;
 	private final Endpoint ownEndpoint;
@@ -39,21 +39,23 @@ public class QuarkusAutoswimRequestSyncScheduler implements AutoswimRequestSyncS
 		this.ownEndpoint = ownEndpointProvider.getOwnEndpoint();
 		this.messageIdGenerator = messageIdGenerator;
 	}
-	
+
 	@Override
 	public void start() {
 		// not necessary
 	}
-	
+
 	@Scheduled(cron = "{autoswim.requestSync.cron}")
 	void sendRequestSyncMessage() {
-		LOG.info("Sending scheduled RequestSyncMessage ...");
-		swimNetwork.sendMessage(RequestSyncMessage.builder()
-				.withCreatedAt(Instant.now())
-				.withId(messageIdGenerator.generateId())
-				.withSender(ownEndpoint)
-				.withHeads(stateHandler.getCurrentHeads())
-				.build());
+		if(swimNetwork.isStarted()) {
+			LOG.info("Sending scheduled RequestSyncMessage ...");
+			swimNetwork.sendMessage(RequestSyncMessage.builder()
+					.withCreatedAt(Instant.now())
+					.withId(messageIdGenerator.generateId())
+					.withSender(ownEndpoint)
+					.withHeads(stateHandler.getCurrentHeads())
+					.build());
+		}
 	}
 
 	@Override
